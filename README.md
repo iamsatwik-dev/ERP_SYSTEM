@@ -14,11 +14,7 @@ The ERP System simplifies internal business processes by providing role-based ac
 <img width="1920" height="1080" alt="Screenshot (28)" src="https://github.com/user-attachments/assets/c9f21547-a20c-43f2-aea4-8cc3ce138a7a" />
 <img width="1920" height="1080" alt="Screenshot (13)" src="https://github.com/user-attachments/assets/0319257c-652b-4eb9-9fb5-2c3086f271ff" />
 <img width="1920" height="1080" alt="Screenshot (23)" src="https://github.com/user-attachments/assets/8c7557b4-384e-4ece-88cc-9865d18e6307" />
-<img width="1920" height="1080" alt="Screenshot (19)" src="https://github.com/user-attachments/assets/4917fe77-ad5b-439e-a688-8d66e0d6269b" />
-<img width="1920" height="1080" alt="Screenshot (18)" src="https://github.com/user-attachments/assets/07ba1ab8-0e12-41ba-9ea9-26a7b346c72d" />
 <img width="1920" height="1080" alt="Screenshot (17)" src="https://github.com/user-attachments/assets/e2f6d77b-ae25-48eb-bc62-50e2462b8e76" />
-<img width="1920" height="1080" alt="Screenshot (16)" src="https://github.com/user-attachments/assets/c8ce136b-e808-4444-99fe-4a9e7cb887b3" />
-<img width="1920" height="1080" alt="Screenshot (16)" src="https://github.com/user-attachments/assets/cda74943-6574-400b-994e-330aa79dbad6" />
 <img width="1920" height="1080" alt="Screenshot (15)" src="https://github.com/user-attachments/assets/002fb488-50db-4646-b987-76195d5b1252" />
 <img width="1920" height="1080" alt="Screenshot (13)" src="https://github.com/user-attachments/assets/5779b4c2-cf48-4924-9e32-c5ed837c2a5f" />
 
@@ -199,6 +195,7 @@ Mobile app support
 Suryanshu Kushwaha
 
 GitHub: SuryanshuKushwaha
+
 
 
 
