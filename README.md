@@ -56,6 +56,8 @@ The ERP System simplifies internal business processes by providing role-based ac
 
 ---
 
+<img width="1920" height="1080" alt="Screenshot (13)" src="https://github.com/user-attachments/assets/5779b4c2-cf48-4924-9e32-c5ed837c2a5f" />
+
 ## 📁 Folder Structure (Simplified)
 
 ERP_SYSTEM/
@@ -186,5 +188,6 @@ Mobile app support
 Suryanshu Kushwaha
 
 GitHub: SuryanshuKushwaha
+
 
 
