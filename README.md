@@ -187,20 +187,4 @@ Suryanshu Kushwaha
 
 GitHub: SuryanshuKushwaha
 
-📜 License
-This project is licensed under the MIT License.
-
-yaml
-Copy code
-
----
-
-## ✅ Next Steps (Optional)
-If you want, I can:
-- Customize README **exactly to your backend/frontend code**
-- Add **screenshots section**
-- Add **API documentation**
-- Create **deployment instructions (Render / Vercel)**
-
-Just tell me 👍
 
