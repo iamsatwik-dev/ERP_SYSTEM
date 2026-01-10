@@ -193,12 +193,3 @@ Mobile app support
 
 👨‍💻 Author
 Suryanshu Kushwaha
-
-GitHub: SuryanshuKushwaha
-
-
-
-
-
-
-
