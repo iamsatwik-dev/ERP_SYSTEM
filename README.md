@@ -8,6 +8,10 @@ A full-stack **ERP (Enterprise Resource Planning) System** designed to digitize 
 The ERP System simplifies internal business processes by providing role-based access for **Admins** and **Employees**, enabling efficient management of leaves, salary slips, enquiries, and quotations through a secure and scalable web application.
 
 ---
+<img width="1920" height="1080" alt="Screenshot (27)" src="https://github.com/user-attachments/assets/a3d2a91b-0cc0-41c2-964f-0863a657ae20" />
+<img width="1920" height="1080" alt="Screenshot (30)" src="https://github.com/user-attachments/assets/42c33ed7-ef3f-4dee-b4a0-4f5e4d564cde" />
+<img width="1920" height="1080" alt="Screenshot (29)" src="https://github.com/user-attachments/assets/ad7306e3-b2c5-46be-9a62-4f3d6c9119a1" />
+<img width="1920" height="1080" alt="Screenshot (28)" src="https://github.com/user-attachments/assets/c9f21547-a20c-43f2-aea4-8cc3ce138a7a" />
 <img width="1920" height="1080" alt="Screenshot (13)" src="https://github.com/user-attachments/assets/0319257c-652b-4eb9-9fb5-2c3086f271ff" />
 <img width="1920" height="1080" alt="Screenshot (23)" src="https://github.com/user-attachments/assets/8c7557b4-384e-4ece-88cc-9865d18e6307" />
 <img width="1920" height="1080" alt="Screenshot (19)" src="https://github.com/user-attachments/assets/4917fe77-ad5b-439e-a688-8d66e0d6269b" />
@@ -195,6 +199,7 @@ Mobile app support
 Suryanshu Kushwaha
 
 GitHub: SuryanshuKushwaha
+
 
 
 
