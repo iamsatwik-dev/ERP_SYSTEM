@@ -60,7 +60,7 @@ const EmployeeListPage = () => {
   async function fetchEmployees() {
     setLoading(true);
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const q = search ? `?search=${encodeURIComponent(search)}` : "";
       const token = await getAdminToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -94,7 +94,7 @@ const EmployeeListPage = () => {
       return;
     }
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const token = await getAdminToken();
       const headers = { "Content-Type": "application/json" };
       if (token) headers.Authorization = `Bearer ${token}`;
@@ -143,7 +143,7 @@ const EmployeeListPage = () => {
       const cached = localStorage.getItem("adminToken") || localStorage.getItem('token');
       if (cached) return cached;
 
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const res = await fetch(`${base}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -226,7 +226,7 @@ const EmployeeListPage = () => {
                           // optimistic update
                           setEmployees((prev) => prev.map(p => p._id === e._id ? { ...p, status: newStatus } : p));
                           try {
-                            const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+                            const base = window.__BACKEND_URL__ || 'http://localhost:5000';
                             const token = await getAdminToken();
                             const headers = { 'Content-Type': 'application/json' };
                             if (token) headers.Authorization = `Bearer ${token}`;
@@ -265,7 +265,7 @@ const EmployeeListPage = () => {
                           if (!pwd) return;
                           if (pwd.length < 6) { alert('Password must be at least 6 characters'); return; }
                           try {
-                            const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+                            const base = window.__BACKEND_URL__ || 'http://localhost:5000';
                             const token = await getAdminToken();
                             const headers = { 'Content-Type': 'application/json' };
                             if (token) headers.Authorization = `Bearer ${token}`;

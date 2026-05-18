@@ -27,7 +27,7 @@ const Quotation = () => {
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const baseUrl = (window && window.__BACKEND_URL__) || 'https://erp-system-jdr2.onrender.com';
+  const baseUrl = (window && window.__BACKEND_URL__) || 'http://localhost:5000';
 
   const onSubmit = async (e) => {
     e.preventDefault();

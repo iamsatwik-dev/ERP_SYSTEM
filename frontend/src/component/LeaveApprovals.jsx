@@ -41,7 +41,7 @@ const LeaveApprovalPage = () => {
     setLoading(true);
     setErrorMsg("");
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const q = [];
       if (filterStatus && filterStatus !== "all")
         q.push(`status=${encodeURIComponent(filterStatus)}`);
@@ -109,7 +109,7 @@ const LeaveApprovalPage = () => {
     );
 
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const res = await fetch(`${base}/api/leaves/${id}/${action}`, {
         method: "POST",
       });
@@ -155,7 +155,7 @@ const LeaveApprovalPage = () => {
     );
 
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const res = await fetch(`${base}/api/leaves/bulk-action`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

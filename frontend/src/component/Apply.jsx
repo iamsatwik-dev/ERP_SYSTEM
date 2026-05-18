@@ -24,7 +24,7 @@ const Apply = () => {
       // backend expects the cover letter file field to be named "coverLetterFile"
       if (coverLetterFile) fd.append("coverLetterFile", coverLetterFile);
 
-      const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
       const res = await fetch(`${base}/api/applications`, { method: "POST", body: fd });
       if (!res.ok) throw new Error("Failed to submit application");
       alert("Application submitted! We'll get back to you.");

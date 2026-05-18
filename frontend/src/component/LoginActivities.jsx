@@ -19,7 +19,7 @@ const LoginActivities = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+        const base = window.__BACKEND_URL__ || 'http://localhost:5000';
         // fast fail timeout to show mock data quickly if backend isn't running
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000); 

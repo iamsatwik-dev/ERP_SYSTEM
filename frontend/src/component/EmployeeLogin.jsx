@@ -12,7 +12,7 @@ const EmployeeLogin = () => {
     e.preventDefault();
     (async () => {
       try {
-        const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+        const base = window.__BACKEND_URL__ || 'http://localhost:5000';
         const res = await fetch(`${base}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

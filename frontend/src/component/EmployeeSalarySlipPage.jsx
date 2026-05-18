@@ -32,7 +32,7 @@ const EmployeeSalarySlipPage = () => {
   async function fetchSlips() {
     setLoading(true);
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const res = await fetch(
         `${base}/api/salary-slips?email=${encodeURIComponent(employeeEmail)}`
       );
@@ -49,7 +49,7 @@ const EmployeeSalarySlipPage = () => {
 
   async function downloadSlip(slip) {
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const url = slip.pdfPath
         ? `${base}/${slip.pdfPath.replace(/\\/g, "/")}`
         : `${base}/api/salary-slips/${slip._id}/pdf`;
@@ -76,7 +76,7 @@ const EmployeeSalarySlipPage = () => {
       return;
     }
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const res = await fetch(`${base}/api/salary-slip-request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

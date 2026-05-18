@@ -27,7 +27,7 @@ const SalarySlipGenerator = () => {
   useEffect(() => {
     const fetchSlips = async () => {
       try {
-        const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+        const base = window.__BACKEND_URL__ || 'http://localhost:5000';
         if (!isAdmin && !loggedEmail) return;
         const url = isAdmin ? `${base}/api/salary-slips` : `${base}/api/salary-slips?email=${encodeURIComponent(loggedEmail)}`;
         const res = await fetch(url, { headers: getAuthHeaders() });
@@ -91,7 +91,7 @@ const SalarySlipGenerator = () => {
       fd.append('totalDeductions', nums.totalDeductions);
       fd.append('netPay', nums.netPay);
 
-      const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
       const res = await fetch(`${base}/api/salary-slips`, { method: 'POST', body: fd, headers: getAuthHeaders(false) });
       if (!res.ok) {
         const txt = await safeReadText(res);
@@ -118,7 +118,7 @@ const SalarySlipGenerator = () => {
     setDownloadStatus('');
     try {
       setDownloadStatus('Preparing download...');
-      const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
       let pdfUrl = '';
       // If slip already has a pdf path, use it directly
       if (slip.pdfPath) {

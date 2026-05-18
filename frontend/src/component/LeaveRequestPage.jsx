@@ -37,7 +37,7 @@ const LeaveRequestPage = () => {
   async function fetchMyLeaves() {
     setLoading(true);
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const res = await fetch(
         `${base}/api/leaves?email=${encodeURIComponent(employeeEmail)}`
       );
@@ -118,7 +118,7 @@ const LeaveRequestPage = () => {
     };
 
     try {
-      const base = window.__BACKEND_URL__ || "https://erp-system-jdr2.onrender.com";
+      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const res = await fetch(`${base}/api/leaves`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

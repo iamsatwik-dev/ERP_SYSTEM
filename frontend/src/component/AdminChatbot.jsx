@@ -27,7 +27,7 @@ export default function AdminChatbot() {
     try {
       const cached = !forceRefresh && localStorage.getItem('adminToken');
       if (cached) return cached;
-      const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
       const res = await fetch(`${base}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -58,7 +58,7 @@ export default function AdminChatbot() {
   const callAutoApprove = async (email) => {
     setLoading(true);
     try {
-      const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
       let token = await getAdminToken();
 
       const doRequest = async (tokenToUse) => {
@@ -104,7 +104,7 @@ export default function AdminChatbot() {
   const changeEmployeeStatus = async (email, status) => {
     append({ from: 'bot', text: `Looking up employee ${email}...` });
     try {
-      const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
       let token = await getAdminToken();
 
       const doLookup = async (tokenToUse) => {

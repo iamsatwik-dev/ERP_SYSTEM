@@ -20,7 +20,7 @@ const EmployeeDashboard = () => {
       if (!email) return;
       setLoading(true);
       try {
-        const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+        const base = window.__BACKEND_URL__ || 'http://localhost:5000';
         const res = await fetch(`${base}/api/salary-slips?email=${encodeURIComponent(email)}`);
         if (!res.ok) throw new Error('Failed to fetch salary slips');
         const data = await res.json();
@@ -38,7 +38,7 @@ const EmployeeDashboard = () => {
     const recordActivity = async () => {
       try {
         if (!email) return;
-        const base = window.__BACKEND_URL__ || 'https://erp-system-jdr2.onrender.com';
+        const base = window.__BACKEND_URL__ || 'http://localhost:5000';
         await fetch(`${base}/api/login-activities`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
