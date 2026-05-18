@@ -192,4 +192,4 @@ Email notifications
 Mobile app support
 
 👨‍💻 Author
-Suryanshu Kushwaha
+Satwik Gupta
