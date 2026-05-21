@@ -1,4 +1,6 @@
 # ERP_SYSTEM
+
+🚀 **Live Demo:** [https://erp-system-3ux9.onrender.com/](https://erp-system-3ux9.onrender.com/)
 A full-stack **ERP (Enterprise Resource Planning) System** designed to digitize and automate organizational workflows such as HR management, employee services, and administrative operations.
 
 ---
