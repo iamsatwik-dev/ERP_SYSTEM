@@ -58,9 +58,6 @@ const sampleEmployees = [
 // In-memory demo salary slips when DB not configured
 const sampleSalarySlips = []
 
-app.get('/', (req, res) => {
-  res.send('Backend server running')
-})
 
 // ensure uploads directory exists
 const uploadsDir = path.join(__dirname, 'uploads')
