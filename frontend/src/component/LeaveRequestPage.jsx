@@ -37,9 +37,8 @@ const LeaveRequestPage = () => {
   async function fetchMyLeaves() {
     setLoading(true);
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const res = await fetch(
-        `${base}/api/leaves?email=${encodeURIComponent(employeeEmail)}`
+        `/api/leaves?email=${encodeURIComponent(employeeEmail)}`
       );
       if (!res.ok) throw new Error("Failed to load leaves");
       const data = await res.json();
@@ -118,8 +117,7 @@ const LeaveRequestPage = () => {
     };
 
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
-      const res = await fetch(`${base}/api/leaves`, {
+      const res = await fetch(`/api/leaves`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

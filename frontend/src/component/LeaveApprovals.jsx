@@ -41,13 +41,12 @@ const LeaveApprovalPage = () => {
     setLoading(true);
     setErrorMsg("");
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const q = [];
       if (filterStatus && filterStatus !== "all")
         q.push(`status=${encodeURIComponent(filterStatus)}`);
       if (search) q.push(`search=${encodeURIComponent(search)}`);
       const qs = q.length ? `?${q.join("&")}` : "";
-      const res = await fetch(`${base}/api/leaves${qs}`);
+      const res = await fetch(`/api/leaves${qs}`);
       if (!res.ok) throw new Error("Failed to load leave requests");
       const data = await res.json();
       const normalized = (data || []).map((d) => ({
@@ -109,8 +108,7 @@ const LeaveApprovalPage = () => {
     );
 
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
-      const res = await fetch(`${base}/api/leaves/${id}/${action}`, {
+      const res = await fetch(`/api/leaves/${id}/${action}`, {
         method: "POST",
       });
 
@@ -155,8 +153,7 @@ const LeaveApprovalPage = () => {
     );
 
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
-      const res = await fetch(`${base}/api/leaves/bulk-action`, {
+      const res = await fetch(`/api/leaves/bulk-action`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids, action }),

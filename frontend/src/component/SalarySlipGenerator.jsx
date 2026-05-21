@@ -27,9 +27,8 @@ const SalarySlipGenerator = () => {
   useEffect(() => {
     const fetchSlips = async () => {
       try {
-        const base = window.__BACKEND_URL__ || 'http://localhost:5000';
         if (!isAdmin && !loggedEmail) return;
-        const url = isAdmin ? `${base}/api/salary-slips` : `${base}/api/salary-slips?email=${encodeURIComponent(loggedEmail)}`;
+        const url = isAdmin ? `/api/salary-slips` : `/api/salary-slips?email=${encodeURIComponent(loggedEmail)}`;
         const res = await fetch(url, { headers: getAuthHeaders() });
         if (!res.ok) throw new Error(`Failed to fetch salary slips (${res.status})`);
         const data = await res.json();
@@ -91,8 +90,7 @@ const SalarySlipGenerator = () => {
       fd.append('totalDeductions', nums.totalDeductions);
       fd.append('netPay', nums.netPay);
 
-      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
-      const res = await fetch(`${base}/api/salary-slips`, { method: 'POST', body: fd, headers: getAuthHeaders(false) });
+      const res = await fetch(`/api/salary-slips`, { method: 'POST', body: fd, headers: getAuthHeaders(false) });
       if (!res.ok) {
         const txt = await safeReadText(res);
         throw new Error(`Submit failed: ${res.status} ${txt}`);
@@ -118,33 +116,8 @@ const SalarySlipGenerator = () => {
     setDownloadStatus('');
     try {
       setDownloadStatus('Preparing download...');
-      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
-      let pdfUrl = '';
-      // If slip already has a pdf path, use it directly
-      if (slip.pdfPath) {
-        pdfUrl = toAbsoluteUrl(base, slip.pdfPath);
-      } else {
-        // ask backend to generate PDF and return path
-        const genRes = await fetch(`${base}/api/salary-slips/${encodeURIComponent(slip._id)}/generate`, {
-          method: 'POST',
-          headers: getAuthHeaders(),
-        });
+      let pdfUrl = `/api/salary-slips/${encodeURIComponent(slip._id)}/pdf`;
 
-        if (!genRes.ok) {
-          const t = await safeReadText(genRes);
-          throw new Error(`Generate failed: ${genRes.status} ${t}`);
-        }
-
-        // try to parse json (expected { pdfPath: "..." } ), fallback to known endpoint
-        let genJson = null;
-        try { genJson = await genRes.json(); } catch {}
-        if (genJson && genJson.pdfPath) {
-          pdfUrl = toAbsoluteUrl(base, genJson.pdfPath);
-        } else {
-          // fallback endpoint (some backends stream at this path)
-          pdfUrl = `${base}/api/salary-slips/${encodeURIComponent(slip._id)}/pdf`;
-        }
-      }
 
       setDownloadStatus('Downloading PDF...');
       await downloadAndHandle(pdfUrl, `${sanitizeFilename(slip.employeeName || slip.email || 'salary')}_${slip.month}_${slip.year}.pdf`);
@@ -157,8 +130,8 @@ const SalarySlipGenerator = () => {
 
   // helper to build absolute url safely
   function toAbsoluteUrl(base, path) {
-    if (!path) return `${base}/`;
-    return path.startsWith('http') ? path : `${base}/${path.replace(/^\/+/, '')}`;
+    if (!path) return `/`;
+    return path.startsWith('http') ? path : `/${path.replace(/^\/+/, '')}`;
   }
 
   // include Authorization header if token present (tries common keys)

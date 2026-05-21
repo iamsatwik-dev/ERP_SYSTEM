@@ -10,7 +10,7 @@ const Applications = () => {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5000/api/applications');
+      const res = await fetch('/api/applications');
       const data = await res.json();
       setApps(data || []);
     } catch (err) {
@@ -23,7 +23,7 @@ const Applications = () => {
   const deleteApplication = async (id) => {
     if (!window.confirm('Delete this application?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/applications/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/applications/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Delete failed');
   try { window.location.reload(); } catch(e) { fetchApplications(); }
     } catch (err) {
@@ -52,8 +52,8 @@ const Applications = () => {
                     <div className="small muted">Submitted: {formatDateISOToDDMMYYYY(a.createdAt)}</div>
                   </div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    {a.resumePath ? <a className="btn btn-ghost" href={`http://localhost:5000/${a.resumePath}`} target="_blank" rel="noreferrer">Resume</a> : null}
-                    {a.coverLetterPath ? <a className="btn btn-ghost" href={`http://localhost:5000/${a.coverLetterPath}`} target="_blank" rel="noreferrer">Cover Letter</a> : null}
+                    {a.resumePath ? <a className="btn btn-ghost" href={`/${a.resumePath}`} target="_blank" rel="noreferrer">Resume</a> : null}
+                    {a.coverLetterPath ? <a className="btn btn-ghost" href={`/${a.coverLetterPath}`} target="_blank" rel="noreferrer">Cover Letter</a> : null}
                     <button onClick={() => deleteApplication(a._id)} className="btn" style={{ background: '#d9534f', color: '#fff' }}>Delete</button>
                   </div>
                 </div>

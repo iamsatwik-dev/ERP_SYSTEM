@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { formatDateISOToDDMMYYYY } from "../utils/dateFormat";
 
-const API_URL = (typeof window !== 'undefined' && window.__BACKEND_URL__) || import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const EnquiryDetail = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -17,7 +16,7 @@ const EnquiryDetail = () => {
   const fetchEnquiries = async (query = "") => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/enquiries${query}`);
+      const res = await fetch(`/api/enquiries${query}`);
       if (!res.ok) throw new Error("Failed to fetch enquiries");
       const data = await res.json();
       setEnquiries(Array.isArray(data) ? data : []);
@@ -32,7 +31,7 @@ const EnquiryDetail = () => {
   // Mark enquiry as resolved
   const markResolved = async (id) => {
     try {
-      await fetch(`${API_URL}/api/enquiries/${id}`, {
+      await fetch(`/api/enquiries/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "Resolved" }),

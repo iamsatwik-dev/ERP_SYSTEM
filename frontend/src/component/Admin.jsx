@@ -15,13 +15,12 @@ const Admin = () => {
   const [counts, setCounts] = useState({ enquiries: null, quotations: null, applications: null });
 
   useEffect(() => {
-    const base = (window && window.__BACKEND_URL__) || 'http://localhost:5000';
     let mounted = true;
     const fetchCounts = async () => {
       try {
         const [enqRes, appsRes] = await Promise.all([
-          fetch(`${base}/api/enquiries`),
-          fetch(`${base}/api/applications`),
+          fetch(`/api/enquiries`),
+          fetch(`/api/applications`),
         ]);
         const enqJson = await enqRes.json().catch(() => []);
         const appsJson = await appsRes.json().catch(() => []);

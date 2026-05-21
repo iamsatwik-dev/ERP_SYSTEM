@@ -60,12 +60,11 @@ const EmployeeListPage = () => {
   async function fetchEmployees() {
     setLoading(true);
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const q = search ? `?search=${encodeURIComponent(search)}` : "";
       const token = await getAdminToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      const res = await fetch(`${base}/api/employees${q}`, { headers });
+      const res = await fetch(`/api/employees${q}`, { headers });
       if (!res.ok) {
         let body = null;
         try { body = await res.json(); } catch(_) { try { body = await res.text(); } catch(_) { body = null; } }
@@ -94,7 +93,6 @@ const EmployeeListPage = () => {
       return;
     }
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const token = await getAdminToken();
       const headers = { "Content-Type": "application/json" };
       if (token) headers.Authorization = `Bearer ${token}`;
@@ -103,7 +101,7 @@ const EmployeeListPage = () => {
       const payload = { ...form };
       if (!payload.password) delete payload.password;
 
-      const res = await fetch(`${base}/api/employees`, {
+      const res = await fetch(`/api/employees`, {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
@@ -143,8 +141,7 @@ const EmployeeListPage = () => {
       const cached = localStorage.getItem("adminToken") || localStorage.getItem('token');
       if (cached) return cached;
 
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
-      const res = await fetch(`${base}/api/auth/login`, {
+      const res = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -226,11 +223,10 @@ const EmployeeListPage = () => {
                           // optimistic update
                           setEmployees((prev) => prev.map(p => p._id === e._id ? { ...p, status: newStatus } : p));
                           try {
-                            const base = window.__BACKEND_URL__ || 'http://localhost:5000';
                             const token = await getAdminToken();
                             const headers = { 'Content-Type': 'application/json' };
                             if (token) headers.Authorization = `Bearer ${token}`;
-                            const res = await fetch(`${base}/api/employees/${e._id}`, {
+                            const res = await fetch(`/api/employees/${e._id}`, {
                               method: 'PUT',
                               headers,
                               body: JSON.stringify({ status: newStatus }),
@@ -265,11 +261,10 @@ const EmployeeListPage = () => {
                           if (!pwd) return;
                           if (pwd.length < 6) { alert('Password must be at least 6 characters'); return; }
                           try {
-                            const base = window.__BACKEND_URL__ || 'http://localhost:5000';
                             const token = await getAdminToken();
                             const headers = { 'Content-Type': 'application/json' };
                             if (token) headers.Authorization = `Bearer ${token}`;
-                            const res = await fetch(`${base}/api/employees/${e._id}`, {
+                            const res = await fetch(`/api/employees/${e._id}`, {
                               method: 'PUT', headers, body: JSON.stringify({ password: pwd })
                             });
                             if (!res.ok) {

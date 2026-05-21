@@ -14,6 +14,7 @@ import EnquiryDetail from "./component/EnquiryDetail";
 import Apply from "./component/Apply";
 import AdminLogin from "./component/AdminLogin";
 import AdminLoginPage from "./component/AdminLoginPage";
+import AdminSignup from "./component/AdminSignup";
 import Home from "./component/Home";
 import Services from "./component/Services";
 import Quotation from "./component/Quotation";
@@ -125,8 +126,9 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-  <Route path="/admin" element={<PageWrapper><Admin /></PageWrapper>} />
-  <Route path="/admin-login" element={<PageWrapper><AdminLoginPage /></PageWrapper>} />
+        <Route path="/admin" element={<PageWrapper><Admin /></PageWrapper>} />
+        <Route path="/admin-login" element={<PageWrapper><AdminLoginPage /></PageWrapper>} />
+        <Route path="/admin-signup" element={<PageWrapper><AdminSignup /></PageWrapper>} />
         <Route path="/apply" element={<PageWrapper><Apply /></PageWrapper>} />
         <Route path="/services" element={<PageWrapper><Services /></PageWrapper>} />
         <Route path="/quotation" element={<PageWrapper><Quotation /></PageWrapper>} />

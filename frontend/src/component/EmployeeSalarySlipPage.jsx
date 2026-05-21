@@ -32,9 +32,8 @@ const EmployeeSalarySlipPage = () => {
   async function fetchSlips() {
     setLoading(true);
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
       const res = await fetch(
-        `${base}/api/salary-slips?email=${encodeURIComponent(employeeEmail)}`
+        `/api/salary-slips?email=${encodeURIComponent(employeeEmail)}`
       );
       if (!res.ok) throw new Error("Failed to load salary slips");
       const data = await res.json();
@@ -48,27 +47,30 @@ const EmployeeSalarySlipPage = () => {
   }
 
   async function downloadSlip(slip) {
+    setErrorMsg('');
+    setStatusMsg('Preparing download...');
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
-      const url = slip.pdfPath
-        ? `${base}/${slip.pdfPath.replace(/\\/g, "/")}`
-        : `${base}/api/salary-slips/${slip._id}/pdf`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch PDF");
+
+      let pdfUrl = `/api/salary-slips/${slip._id}/pdf`;
+
+
+      const res = await fetch(pdfUrl);
+      if (!res.ok) throw new Error(`Download failed (${res.status})`);
       const blob = await res.blob();
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `${slip.employeeName}_${slip.month}_${slip.year}.pdf`;
+      link.download = `${slip.employeeName || 'salary'}_${slip.month}_${slip.year}.pdf`;
       document.body.appendChild(link);
       link.click();
       link.remove();
       URL.revokeObjectURL(link.href);
-      setStatusMsg("Downloaded successfully ✅");
+      setStatusMsg('Downloaded successfully ✅');
     } catch (err) {
       console.error(err);
-      setErrorMsg("Download failed ❌");
+      setErrorMsg(`Download failed ❌ — ${err.message}`);
     }
   }
+
 
   async function requestSlip() {
     if (!requestedMonth || !requestedYear) {
@@ -76,8 +78,7 @@ const EmployeeSalarySlipPage = () => {
       return;
     }
     try {
-      const base = window.__BACKEND_URL__ || "http://localhost:5000";
-      const res = await fetch(`${base}/api/salary-slip-request`, {
+      const res = await fetch(`/api/salary-slip-request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

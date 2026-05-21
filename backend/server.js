@@ -14,6 +14,7 @@ import Quotation from './models/Quotation.js'
 import LeaveRequest from './models/LeaveRequest.js'
 import SalarySlip from './models/SalarySlip.js'
 import LoginActivity from './models/LoginActivity.js'
+import Admin from './models/Admin.js'
 
 import multer from 'multer'
 import fs from 'fs'
@@ -34,6 +35,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 const PORT = process.env.PORT || 5000
 const JWT_SECRET = process.env.JWT_SECRET || 'devsecret'
 const DEFAULT_ADMIN_PWD = process.env.DEFAULT_ADMIN_PWD || 'admin123'
+const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || 'erp@AdminKey2024'
 
 let dbConnected = false
 if (process.env.MONGO_URI) {
@@ -76,6 +78,147 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage })
 
+// ─── Professional Salary Slip PDF Builder ─────────────────────────────────────
+function buildSalaryPDF(doc, slip) {
+  const W = 595.28  // A4 width in points
+  const accent = '#1e40af'   // deep blue
+  const accentLight = '#dbeafe'
+  const textDark = '#1e293b'
+  const textMuted = '#64748b'
+  const green = '#166534'
+  const greenBg = '#dcfce7'
+  const red = '#991b1b'
+  const redBg = '#fee2e2'
+
+  // ── Header banner ────────────────────────────────────────────────────────
+  doc.rect(0, 0, W, 90).fill(accent)
+
+  doc.fillColor('#ffffff').fontSize(22).font('Helvetica-Bold')
+    .text('ABC IT Solutions', 40, 20, { width: 350 })
+  doc.fontSize(10).font('Helvetica')
+    .text('Enterprise Resource Planning System', 40, 48)
+  doc.fontSize(10)
+    .text('www.abcitsolutions.com  |  support@abcit.com', 40, 62)
+
+  // Slip label badge (top-right)
+  doc.rect(W - 160, 20, 130, 50).fill('rgba(255,255,255,0.15)').stroke()
+  doc.fillColor('#ffffff').fontSize(13).font('Helvetica-Bold')
+    .text('SALARY SLIP', W - 155, 30, { width: 120, align: 'center' })
+  doc.fontSize(9).font('Helvetica')
+    .text(`${(slip.month || '').toUpperCase()} ${slip.year || ''}`, W - 155, 50, { width: 120, align: 'center' })
+
+  // ── Employee info card ────────────────────────────────────────────────────
+  let y = 105
+  doc.rect(30, y, W - 60, 80).fill('#f8fafc').stroke('#e2e8f0')
+
+  const col1 = 45, col2 = 320
+  const labelY = y + 12
+  doc.fillColor(textMuted).fontSize(8).font('Helvetica')
+  doc.text('EMPLOYEE NAME', col1, labelY)
+  doc.text('EMPLOYEE ID', col2, labelY)
+
+  doc.fillColor(textDark).fontSize(11).font('Helvetica-Bold')
+  doc.text(slip.employeeName || slip.name || '—', col1, labelY + 12)
+  doc.text(slip.empId || '—', col2, labelY + 12)
+
+  doc.fillColor(textMuted).fontSize(8).font('Helvetica')
+  doc.text('DESIGNATION', col1, labelY + 32)
+  doc.text('PAY PERIOD', col2, labelY + 32)
+
+  doc.fillColor(textDark).fontSize(10).font('Helvetica-Bold')
+  doc.text(slip.designation || '—', col1, labelY + 44)
+  doc.text(`${slip.month || ''} ${slip.year || ''}`, col2, labelY + 44)
+
+  // ── Earnings table ────────────────────────────────────────────────────────
+  y = 205
+  doc.fillColor(accent).fontSize(11).font('Helvetica-Bold')
+    .text('EARNINGS', 30, y)
+
+  const tableTop = y + 18
+  const colLabel = 40, colAmt = W - 150
+
+  // Table header
+  doc.rect(30, tableTop, W - 60, 22).fill(accentLight)
+  doc.fillColor(accent).fontSize(9).font('Helvetica-Bold')
+  doc.text('COMPONENT', colLabel, tableTop + 7)
+  doc.text('AMOUNT (INR)', colAmt, tableTop + 7, { width: 100, align: 'right' })
+
+  const earningsRows = [
+    ['Basic Salary', slip.basic || 0],
+    ['House Rent Allowance (HRA)', slip.hra || 0],
+    ['Other Allowances', slip.allowances || 0],
+  ]
+
+  let rowY = tableTop + 22
+  earningsRows.forEach(([label, amt], i) => {
+    if (i % 2 === 0) doc.rect(30, rowY, W - 60, 20).fill('#f8fafc')
+    doc.fillColor(textDark).fontSize(10).font('Helvetica')
+    doc.text(label, colLabel, rowY + 5)
+    doc.text(`Rs. ${Number(amt).toLocaleString('en-IN')}`, colAmt, rowY + 5, { width: 100, align: 'right' })
+    rowY += 20
+  })
+
+  // Earnings total
+  const totalEarnings = Number(slip.totalEarnings) || (Number(slip.basic || 0) + Number(slip.hra || 0) + Number(slip.allowances || 0))
+  doc.rect(30, rowY, W - 60, 22).fill(accentLight)
+  doc.fillColor(accent).fontSize(10).font('Helvetica-Bold')
+  doc.text('Total Earnings', colLabel, rowY + 6)
+  doc.text(`Rs. ${totalEarnings.toLocaleString('en-IN')}`, colAmt, rowY + 6, { width: 100, align: 'right' })
+  rowY += 22
+
+  // ── Deductions table ──────────────────────────────────────────────────────
+  y = rowY + 18
+  doc.fillColor(red).fontSize(11).font('Helvetica-Bold')
+    .text('DEDUCTIONS', 30, y)
+
+  const dedTop = y + 18
+  doc.rect(30, dedTop, W - 60, 22).fill('#fee2e2')
+  doc.fillColor(red).fontSize(9).font('Helvetica-Bold')
+  doc.text('COMPONENT', colLabel, dedTop + 7)
+  doc.text('AMOUNT (INR)', colAmt, dedTop + 7, { width: 100, align: 'right' })
+
+  const dedRows = [
+    ['Provident Fund (PF)', slip.pf || 0],
+    ['Income Tax (TDS)', slip.tax || 0],
+    ['Other Deductions', slip.otherDeductions || slip.deductions || 0],
+  ]
+
+  rowY = dedTop + 22
+  dedRows.forEach(([label, amt], i) => {
+    if (i % 2 === 0) doc.rect(30, rowY, W - 60, 20).fill('#fef2f2')
+    doc.fillColor(textDark).fontSize(10).font('Helvetica')
+    doc.text(label, colLabel, rowY + 5)
+    doc.text(`Rs. ${Number(amt).toLocaleString('en-IN')}`, colAmt, rowY + 5, { width: 100, align: 'right' })
+    rowY += 20
+  })
+
+  const totalDeductions = Number(slip.totalDeductions) || (Number(slip.pf || 0) + Number(slip.tax || 0) + Number(slip.otherDeductions || slip.deductions || 0))
+  doc.rect(30, rowY, W - 60, 22).fill('#fee2e2')
+  doc.fillColor(red).fontSize(10).font('Helvetica-Bold')
+  doc.text('Total Deductions', colLabel, rowY + 6)
+  doc.text(`Rs. ${totalDeductions.toLocaleString('en-IN')}`, colAmt, rowY + 6, { width: 100, align: 'right' })
+  rowY += 22
+
+  // ── Net Pay box ───────────────────────────────────────────────────────────
+  rowY += 16
+  doc.rect(30, rowY, W - 60, 48).fill(green)
+  doc.fillColor('#ffffff').fontSize(11).font('Helvetica')
+    .text('NET PAY (Take Home)', colLabel, rowY + 10)
+
+  const netPay = Number(slip.netPay) || (totalEarnings - totalDeductions)
+  doc.fontSize(20).font('Helvetica-Bold')
+    .text(`Rs. ${netPay.toLocaleString('en-IN')}`, colAmt - 50, rowY + 8, { width: 150, align: 'right' })
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  rowY += 80
+  doc.rect(0, 780, W, 60).fill(accent)
+  doc.fillColor('rgba(255,255,255,0.7)').fontSize(8).font('Helvetica')
+    .text('This is a system-generated salary slip and does not require a physical signature.', 30, 790, { width: W - 60, align: 'center' })
+  doc.fillColor('#ffffff').fontSize(8)
+    .text('ABC IT Solutions  |  ERP System  |  Confidential', 30, 805, { width: W - 60, align: 'center' })
+}
+
+
 
 // Auth: simple admin + employee login
 app.post('/api/auth/login', async (req, res) => {
@@ -112,6 +255,67 @@ app.post('/api/auth/login', async (req, res) => {
     return res.json({ token })
   } catch (err) {
     console.error('Login error', err)
+    return res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// ─── Admin Register ───────────────────────────────────────────────────────────
+app.post('/api/admin/register', async (req, res) => {
+  try {
+    const { name, email, password, secretKey } = req.body || {}
+    if (!name || !email || !password || !secretKey)
+      return res.status(400).json({ error: 'All fields are required' })
+
+    if (secretKey !== ADMIN_SECRET_KEY)
+      return res.status(403).json({ error: 'Invalid secret key' })
+
+    if (!dbConnected)
+      return res.status(503).json({ error: 'Database not connected' })
+
+    const existing = await Admin.findOne({ email: email.toLowerCase() })
+    if (existing)
+      return res.status(409).json({ error: 'An admin with this email already exists' })
+
+    const hashed = await bcrypt.hash(password, 10)
+    const admin = new Admin({ name, email, password: hashed })
+    await admin.save()
+
+    const token = jwt.sign({ email: admin.email, role: 'admin', id: admin._id }, JWT_SECRET, { expiresIn: '7d' })
+    return res.status(201).json({ message: 'Admin registered successfully', token, name: admin.name, email: admin.email })
+  } catch (err) {
+    console.error('POST /api/admin/register error', err)
+    return res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// ─── Admin Login ──────────────────────────────────────────────────────────────
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { email, password } = req.body || {}
+    if (!email || !password)
+      return res.status(400).json({ error: 'Email and password are required' })
+
+    // Fallback: legacy hardcoded admin
+    if (email === 'admin@gmail.com' && password === DEFAULT_ADMIN_PWD) {
+      const token = jwt.sign({ email, role: 'admin' }, JWT_SECRET, { expiresIn: '7d' })
+      return res.json({ token, name: 'Admin', email })
+    }
+
+    if (!dbConnected)
+      return res.status(503).json({ error: 'Database not connected' })
+
+    const admin = await Admin.findOne({ email: email.toLowerCase() })
+    if (!admin)
+      return res.status(401).json({ error: 'Invalid email or password' })
+
+    const match = await bcrypt.compare(password, admin.password)
+    if (!match)
+      return res.status(401).json({ error: 'Invalid email or password' })
+
+    const token = jwt.sign({ email: admin.email, role: 'admin', id: admin._id }, JWT_SECRET, { expiresIn: '7d' })
+    return res.json({ token, name: admin.name, email: admin.email })
+  } catch (err) {
+    console.error('POST /api/admin/login error', err)
     return res.status(500).json({ error: 'Server error' })
   }
 })
@@ -208,33 +412,10 @@ app.post('/api/salary-slips', upload.none(), async (req, res) => {
         const id = obj._id
         const filename = `salary_${id}.pdf`
         const filepath = path.join(uploadsDir, filename)
-        const doc = new PDFDocument({ size: 'A4' })
+        const doc = new PDFDocument({ size: 'A4', margin: 0 })
         const stream = fs.createWriteStream(filepath)
         doc.pipe(stream)
-        doc.fontSize(18).text('Salary Slip (Demo)', { align: 'center' })
-        doc.moveDown()
-        doc.fontSize(12).text(`Employee: ${obj.employeeName || obj.name || ''}`)
-        doc.text(`Employee ID: ${obj.empId || ''}`)
-        doc.text(`Designation: ${obj.designation || ''}`)
-        doc.text(`Month/Year: ${obj.month || ''} ${obj.year || ''}`)
-        doc.moveDown()
-        doc.text(`Basic: ₹${obj.basic || 0}`)
-        doc.text(`HRA: ₹${obj.hra || 0}`)
-        doc.text(`Allowances: ₹${obj.allowances || 0}`)
-        doc.text(`PF: ₹${obj.pf || 0}`)
-        doc.text(`Tax: ₹${obj.tax || 0}`)
-        doc.text(`Other Deductions: ₹${obj.otherDeductions || obj.deductions || 0}`)
-        doc.moveDown()
-        const basic = Number(obj.basic) || 0
-        const hra = Number(obj.hra) || 0
-        const allowances = Number(obj.allowances) || 0
-        const pf = Number(obj.pf) || 0
-        const tax = Number(obj.tax) || 0
-        const otherDeductions = Number(obj.otherDeductions || obj.deductions) || 0
-        const totalEarnings = basic + hra + allowances
-        const totalDeductions = pf + tax + otherDeductions
-        const netPay = totalEarnings - totalDeductions
-        doc.text(`Net Pay: ₹${netPay || 0}`, { underline: true })
+        buildSalaryPDF(doc, obj)
         doc.end()
         // Wait for stream to finish synchronously before responding
         await new Promise((resolve, reject) => {
@@ -296,71 +477,34 @@ app.post('/api/salary-slips/:id/generate', async (req, res) => {
       if (!slip) return res.status(404).json({ error: 'Not available in demo' })
       const filename = `salary_${id}.pdf`
       const filepath = path.join(uploadsDir, filename)
-      const doc = new PDFDocument({ size: 'A4' })
+      const doc = new PDFDocument({ size: 'A4', margin: 0 })
       const stream = fs.createWriteStream(filepath)
       doc.pipe(stream)
-      doc.fontSize(18).text('Salary Slip (Demo)', { align: 'center' })
-      doc.moveDown()
-      doc.fontSize(12).text(`Employee: ${slip.employeeName || slip.name || ''}`)
-      doc.text(`Employee ID: ${slip.empId || ''}`)
-      doc.text(`Designation: ${slip.designation || ''}`)
-      doc.text(`Month/Year: ${slip.month || ''} ${slip.year || ''}`)
-      doc.moveDown()
-      doc.text(`Basic: ₹${slip.basic || 0}`)
-      doc.text(`HRA: ₹${slip.hra || 0}`)
-      doc.text(`Allowances: ₹${slip.allowances || 0}`)
-      doc.text(`PF: ₹${slip.pf || 0}`)
-      doc.text(`Tax: ₹${slip.tax || 0}`)
-      doc.text(`Other Deductions: ₹${slip.otherDeductions || slip.deductions || 0}`)
-      doc.moveDown()
-      const basic = Number(slip.basic) || 0
-      const hra = Number(slip.hra) || 0
-      const allowances = Number(slip.allowances) || 0
-      const pf = Number(slip.pf) || 0
-      const tax = Number(slip.tax) || 0
-      const otherDeductions = Number(slip.otherDeductions || slip.deductions) || 0
-      const totalEarnings = basic + hra + allowances
-      const totalDeductions = pf + tax + otherDeductions
-      const netPay = totalEarnings - totalDeductions
-      doc.text(`Net Pay: ₹${netPay || 0}`, { underline: true })
+      buildSalaryPDF(doc, slip)
       doc.end()
       await new Promise((resolve, reject) => {
         stream.on('finish', resolve)
         stream.on('error', reject)
       })
-      slip.pdfPath = path.join('uploads', filename)
+      slip.pdfPath = 'uploads/' + filename
       return res.json({ pdfPath: slip.pdfPath })
     }
     const slip = await SalarySlip.findById(id)
     if (!slip) return res.status(404).json({ error: 'Not found' })
-    // build a simple PDF
-    const doc = new PDFDocument({ size: 'A4' })
     const filename = `salary_${id}.pdf`
     const filepath = path.join(uploadsDir, filename)
+    const doc = new PDFDocument({ size: 'A4', margin: 0 })
     const stream = fs.createWriteStream(filepath)
     doc.pipe(stream)
-    doc.fontSize(18).text('Salary Slip', { align: 'center' })
-    doc.moveDown()
-    doc.fontSize(12).text(`Employee: ${slip.employeeName || ''}`)
-    doc.text(`Employee ID: ${slip.empId || ''}`)
-    doc.text(`Designation: ${slip.designation || ''}`)
-    doc.text(`Month/Year: ${slip.month || ''} ${slip.year || ''}`)
-    doc.moveDown()
-    doc.text(`Basic: ₹${slip.basic || 0}`)
-    doc.text(`HRA: ₹${slip.hra || 0}`)
-    doc.text(`Allowances: ₹${slip.allowances || 0}`)
-    doc.text(`PF: ₹${slip.pf || 0}`)
-    doc.text(`Tax: ₹${slip.tax || 0}`)
-    doc.text(`Other Deductions: ₹${slip.otherDeductions || 0}`)
-    doc.moveDown()
-    doc.text(`Net Pay: ₹${slip.netPay || 0}`, { underline: true })
+    buildSalaryPDF(doc, slip)
     doc.end()
-    stream.on('finish', async () => {
-      slip.pdfPath = path.join('uploads', filename)
-      await slip.save()
-      return res.json({ pdfPath: slip.pdfPath })
+    await new Promise((resolve, reject) => {
+      stream.on('finish', resolve)
+      stream.on('error', reject)
     })
-    stream.on('error', (e) => { console.error('PDF stream error', e); return res.status(500).json({ error: 'PDF error' }) })
+    slip.pdfPath = 'uploads/' + filename
+    await slip.save()
+    return res.json({ pdfPath: slip.pdfPath })
   } catch (err) { console.error(err); return res.status(500).json({ error: 'Server error' }) }
 })
 
@@ -369,8 +513,28 @@ app.get('/api/salary-slips/:id/pdf', async (req, res) => {
     const { id } = req.params
     if (!dbConnected) return res.status(404).send('Not available')
     const slip = await SalarySlip.findById(id)
-    if (!slip || !slip.pdfPath) return res.status(404).send('Not found')
-    const full = path.join(__dirname, slip.pdfPath)
+    if (!slip) return res.status(404).send('Not found')
+
+    // Always regenerate on the fly to get latest design
+    const filename = `salary_${id}.pdf`
+    const filepath = path.join(uploadsDir, filename)
+    const doc = new PDFDocument({ size: 'A4', margin: 0 })
+    const stream = fs.createWriteStream(filepath)
+    doc.pipe(stream)
+    buildSalaryPDF(doc, slip)
+    doc.end()
+    await new Promise((resolve, reject) => {
+      stream.on('finish', resolve)
+      stream.on('error', reject)
+    })
+    
+    // Save path if it was missing before
+    if (!slip.pdfPath) {
+      slip.pdfPath = 'uploads/' + filename
+      await slip.save()
+    }
+
+    const full = path.join(__dirname, slip.pdfPath.replace(/\\/g, '/'))
     return res.sendFile(full)
   } catch (err) { console.error(err); return res.status(500).send('Server error') }
 })
@@ -551,6 +715,13 @@ app.put('/api/employees/:id', async (req, res) => {
     console.error('PUT /api/employees/:id error', err)
     return res.status(500).json({ error: 'Server error' })
   }
+})
+
+// Serve frontend static files in production
+const frontendDist = path.join(__dirname, '../frontend/dist')
+app.use(express.static(frontendDist))
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'))
 })
 
 app.listen(PORT, () => {

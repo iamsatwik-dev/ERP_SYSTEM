@@ -29,7 +29,7 @@ const QuotationDashboard = () => {
   const fetchQuotations = async () => {
     try {
       setLoading(true);
-  const res = await fetch('http://localhost:5000/api/quotations');
+  const res = await fetch('/api/quotations');
       const data = await res.json();
       const quotes = (data || []).filter((q) => (q.message || '').toLowerCase().includes('quotation request'));
       setQuotations(quotes);
@@ -40,7 +40,7 @@ const QuotationDashboard = () => {
 
   const markResolved = async (id) => {
     try {
-    await fetch(`http://localhost:5000/api/quotations/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'Resolved' }) });
+    await fetch(`/api/quotations/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'Resolved' }) });
   try { window.location.reload(); } catch(e) {}
       fetchQuotations();
     } catch (err) { console.error(err); }
@@ -49,7 +49,7 @@ const QuotationDashboard = () => {
   const deleteQuotation = async (id) => {
     if (!window.confirm('Delete this quotation request?')) return;
     try {
-  await fetch(`http://localhost:5000/api/quotations/${id}`, { method: 'DELETE' });
+  await fetch(`/api/quotations/${id}`, { method: 'DELETE' });
   try { window.location.reload(); } catch(e) {}
       fetchQuotations();
     } catch (err) { console.error(err); }

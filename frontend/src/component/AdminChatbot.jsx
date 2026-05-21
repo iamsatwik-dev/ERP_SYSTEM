@@ -27,8 +27,7 @@ export default function AdminChatbot() {
     try {
       const cached = !forceRefresh && localStorage.getItem('adminToken');
       if (cached) return cached;
-      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
-      const res = await fetch(`${base}/api/auth/login`, {
+      const res = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: 'admin@abcit.com', password: 'admin123' }),
@@ -58,14 +57,13 @@ export default function AdminChatbot() {
   const callAutoApprove = async (email) => {
     setLoading(true);
     try {
-      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
       let token = await getAdminToken();
 
       const doRequest = async (tokenToUse) => {
         const headers = { 'Content-Type': 'application/json' };
         if (tokenToUse) headers.Authorization = `Bearer ${tokenToUse}`;
         const body = email ? { email } : {};
-        return await fetch(`${base}/api/leaves/auto-approve`, {
+        return await fetch(`/api/leaves/auto-approve`, {
           method: 'POST',
           headers,
           body: JSON.stringify(body),
@@ -104,13 +102,12 @@ export default function AdminChatbot() {
   const changeEmployeeStatus = async (email, status) => {
     append({ from: 'bot', text: `Looking up employee ${email}...` });
     try {
-      const base = window.__BACKEND_URL__ || 'http://localhost:5000';
       let token = await getAdminToken();
 
       const doLookup = async (tokenToUse) => {
         const headers = { 'Content-Type': 'application/json' };
         if (tokenToUse) headers.Authorization = `Bearer ${tokenToUse}`;
-        return await fetch(`${base}/api/employees?search=${encodeURIComponent(email)}`, { headers });
+        return await fetch(`/api/employees?search=${encodeURIComponent(email)}`, { headers });
       };
 
       let res = await doLookup(token);
@@ -138,7 +135,7 @@ export default function AdminChatbot() {
       const doUpdate = async (tokenToUse) => {
         const headers = { 'Content-Type': 'application/json' };
         if (tokenToUse) headers.Authorization = `Bearer ${tokenToUse}`;
-        return await fetch(`${base}/api/employees/${found._id}`, {
+        return await fetch(`/api/employees/${found._id}`, {
           method: 'PUT',
           headers,
           body: JSON.stringify({ status }),

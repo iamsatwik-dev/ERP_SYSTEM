@@ -27,13 +27,12 @@ const Quotation = () => {
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const baseUrl = (window && window.__BACKEND_URL__) || 'http://localhost:5000';
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setStatus('submitting');
     try {
-      const res = await fetch(`${baseUrl}/api/quotations`, {
+      const res = await fetch(`/api/quotations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
